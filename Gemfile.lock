@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    blanks (0.1.0)
+    blanks (1.0.0)
       activemodel (>= 6.0)
       activesupport (>= 6.0)
 
