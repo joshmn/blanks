@@ -1,0 +1,30 @@
+# frozen_string_literal: true
+
+require_relative "lib/blanks/version"
+
+Gem::Specification.new do |spec|
+  spec.name = "blanks"
+  spec.version = Blanks::VERSION
+  spec.authors = ["Josh Brody"]
+  spec.email = ["gems@josh.mn"]
+
+  spec.summary = "Really, really reasonable form objects."
+  spec.description = spec.summary
+  spec.homepage = "https://github.com/joshmn/blanks"
+  spec.license = "MIT"
+  spec.required_ruby_version = ">= 3.0.0"
+
+  spec.metadata["homepage_uri"] = spec.homepage
+
+  gemspec = File.basename(__FILE__)
+  spec.files = IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) do |ls|
+    ls.readlines("\x0", chomp: true).reject do |f|
+      (f == gemspec) ||
+        f.start_with?(*%w[bin/ Gemfile .gitignore .github/])
+    end
+  end
+  spec.require_paths = ["lib"]
+
+  spec.add_dependency "activemodel", ">= 6.0"
+  spec.add_dependency "activesupport", ">= 6.0"
+end

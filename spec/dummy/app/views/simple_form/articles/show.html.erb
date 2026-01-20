@@ -1,0 +1,29 @@
+<h1><%= @article.title %></h1>
+
+<p><strong>Author:</strong> <%= @article.author_name %></p>
+
+<% if @article.cover_image %>
+  <div class="nested">
+    <h4>Cover Image</h4>
+    <p><strong>URL:</strong> <%= @article.cover_image.url %></p>
+    <p><strong>Alt text:</strong> <%= @article.cover_image.alt_text %></p>
+  </div>
+<% end %>
+
+<div>
+  <%= simple_format(@article.body) %>
+</div>
+
+<% if @article.tags.any? %>
+  <h3>Tags</h3>
+  <ul>
+    <% @article.tags.each do |tag| %>
+      <li><%= tag.name %> <% if tag.color.present? %>(<%= tag.color %>)<% end %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<p>
+  <%= link_to "Edit", edit_simple_form_article_path(@article) %> |
+  <%= link_to "Back", simple_form_articles_path %>
+</p>

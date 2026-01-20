@@ -1,0 +1,30 @@
+<%= form_with model: form, url: form.persisted? ? standard_post_path(form) : standard_posts_path do |f| %>
+  <% if form.errors.any? %>
+    <div class="error">
+      <ul>
+        <% form.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :title %>
+    <%= f.text_field :title %>
+  </div>
+
+  <div class="field">
+    <%= f.label :content %>
+    <%= f.text_area :content, rows: 6 %>
+  </div>
+
+  <div class="field">
+    <%= f.label :published %>
+    <%= f.check_box :published %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit class: "btn" %>
+  </div>
+<% end %>

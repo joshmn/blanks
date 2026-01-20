@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+VERSION=$1
+
+printf "module Blanks\n  VERSION = \"$VERSION\"\nend\n" > ./lib/blanks/version.rb
+bundle
+git add Gemfile.lock lib/blanks/version.rb
+git commit -m "Bump version for $VERSION"
+git push
+git tag v$VERSION
+git push --tags
+gem build blanks.gemspec
+gem push "blanks-$VERSION.gem" --host https://rubygems.org
+rm "blanks-$VERSION.gem"

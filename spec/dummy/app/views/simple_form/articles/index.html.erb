@@ -1,0 +1,29 @@
+<h1>Articles (SimpleForm)</h1>
+
+<p><%= link_to "New Article", new_simple_form_article_path %></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Author</th>
+      <th>Cover Image</th>
+      <th>Tags</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @articles.each do |article| %>
+      <tr>
+        <td><%= link_to article.title, simple_form_article_path(article) %></td>
+        <td><%= article.author_name %></td>
+        <td><%= article.cover_image&.url.present? ? "Yes" : "No" %></td>
+        <td><%= article.tags.map(&:name).join(", ") %></td>
+        <td>
+          <%= link_to "Edit", edit_simple_form_article_path(article) %> |
+          <%= link_to "Delete", simple_form_article_path(article), method: :delete, data: { confirm: "Are you sure?" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

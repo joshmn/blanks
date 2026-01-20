@@ -1,0 +1,19 @@
+<%= simple_form_for form, url: form.persisted? ? simple_form_post_path(form) : simple_form_posts_path do |f| %>
+  <% if form.errors.any? %>
+    <div class="error">
+      <ul>
+        <% form.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= f.input :title %>
+  <%= f.input :content, as: :text %>
+  <%= f.input :published, as: :boolean %>
+
+  <div class="actions">
+    <%= f.button :submit, class: "btn" %>
+  </div>
+<% end %>

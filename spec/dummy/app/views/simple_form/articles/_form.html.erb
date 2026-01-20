@@ -1,0 +1,43 @@
+<%= simple_form_for form, url: form.persisted? ? simple_form_article_path(form) : simple_form_articles_path do |f| %>
+  <% if form.errors.any? %>
+    <div class="error">
+      <ul>
+        <% form.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= f.input :title %>
+  <%= f.input :body, as: :text %>
+  <%= f.input :author_name %>
+
+  <div class="nested">
+    <h4>Cover Image</h4>
+    <%= f.simple_fields_for :cover_image do |ci| %>
+      <%= ci.input :url, placeholder: "https://example.com/image.jpg" %>
+      <%= ci.input :alt_text %>
+    <% end %>
+  </div>
+
+  <div class="nested">
+    <h4>Tags</h4>
+    <%= f.simple_fields_for :tags do |tag| %>
+      <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <% if tag.object.persisted? %>
+          <%= tag.hidden_field :id %>
+        <% end %>
+        <%= tag.input :name, wrapper: false, label: false, placeholder: "Tag name" %>
+        <%= tag.input :color, wrapper: false, label: false, placeholder: "#ff0000" %>
+        <% if tag.object.persisted? %>
+          <%= tag.input :_destroy, as: :boolean, wrapper: false, label: "Delete" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="actions">
+    <%= f.button :submit, class: "btn" %>
+  </div>
+<% end %>

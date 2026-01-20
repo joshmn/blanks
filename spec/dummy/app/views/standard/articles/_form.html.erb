@@ -1,0 +1,61 @@
+<%= form_with model: form, url: form.persisted? ? standard_article_path(form) : standard_articles_path do |f| %>
+  <% if form.errors.any? %>
+    <div class="error">
+      <ul>
+        <% form.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :title %>
+    <%= f.text_field :title %>
+  </div>
+
+  <div class="field">
+    <%= f.label :body %>
+    <%= f.text_area :body, rows: 6 %>
+  </div>
+
+  <div class="field">
+    <%= f.label :author_name %>
+    <%= f.text_field :author_name %>
+  </div>
+
+  <div class="nested">
+    <h4>Cover Image</h4>
+    <%= f.fields_for :cover_image do |ci| %>
+      <div class="field">
+        <%= ci.label :url %>
+        <%= ci.text_field :url, placeholder: "https://example.com/image.jpg" %>
+      </div>
+      <div class="field">
+        <%= ci.label :alt_text %>
+        <%= ci.text_field :alt_text %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="nested">
+    <h4>Tags</h4>
+    <%= f.fields_for :tags do |tag| %>
+      <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
+        <% if tag.object.persisted? %>
+          <%= tag.hidden_field :id %>
+        <% end %>
+        <%= tag.text_field :name, placeholder: "Tag name" %>
+        <%= tag.text_field :color, placeholder: "#ff0000" %>
+        <% if tag.object.persisted? %>
+          <%= tag.label :_destroy, "Delete" %>
+          <%= tag.check_box :_destroy %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit class: "btn" %>
+  </div>
+<% end %>
