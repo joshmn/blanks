@@ -280,6 +280,30 @@ RSpec.describe Blanks::Base do
     end
   end
 
+  describe "#empty?" do
+    it "returns true when all attributes are blank" do
+      form_class = Class.new(described_class) do
+        attribute :title, :string
+        attribute :count, :integer
+      end
+
+      form = form_class.new
+
+      expect(form.empty?).to be(true)
+    end
+
+    it "returns false when any attribute is present" do
+      form_class = Class.new(described_class) do
+        attribute :title, :string
+        attribute :count, :integer
+      end
+
+      form = form_class.new(title: "present")
+
+      expect(form.empty?).to be(false)
+    end
+  end
+
   describe "#valid?" do
     it "returns true when all validations pass" do
       form_class = Class.new(described_class) do

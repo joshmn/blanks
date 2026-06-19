@@ -36,6 +36,9 @@ form = PostForm.new(title: "hello", content: "world")
 form.valid? # true
 ```
 
+`Blanks::Base` includes a default `empty?` implementation: a form is empty when all `attributes` values are blank.
+Override this in subclasses if your form uses custom emptiness semantics.
+
 ### Inheriting attributes from models
 
 Pull attribute definitions from existing models instead of manually defining each one.
@@ -128,6 +131,20 @@ form = PostForm.new
 form.images.new(url: "https://example.com/image.jpg")
 form.images.count # 1
 ```
+
+`has_many` associations return a collection proxy that supports common collection methods:
+
+```ruby
+form.images.any? # true/false
+form.images.any? { |image| image.url.present? } # true/false
+form.images.reverse # array in reverse order
+```
+
+Notes:
+
+1. `any?` supports both no-block and block forms.
+2. `reverse` returns a reversed array view and does not mutate the underlying proxy order.
+3. `to_a` is still available when explicit array conversion is desired.
 
 ### Nested attributes from params
 
