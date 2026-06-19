@@ -219,6 +219,10 @@ module Blanks
       attributes.except(*excluded_keys)
     end
 
+    def empty?
+      attributes.all? { |_name, value| value.blank? }
+    end
+
     private
 
     def nested_forms_valid?

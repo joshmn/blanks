@@ -183,6 +183,18 @@ RSpec.describe Blanks::AssociationProxy do
     end
   end
 
+  describe "#reverse" do
+    it "returns records in reverse order" do
+      proxy = described_class.new("ItemForm")
+      first = proxy.new(url: "first")
+      second = proxy.new(url: "second")
+
+      expect(proxy.reverse).to eq([second, first])
+      # Keep default forward iteration behavior unchanged.
+      expect(proxy.to_a).to eq([first, second])
+    end
+  end
+
   describe "#valid?" do
     it "returns true when all items are valid" do
       valid_form_class = Class.new(Blanks::Base) do
