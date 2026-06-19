@@ -180,7 +180,9 @@ module Blanks
 
     def valid?(context = nil)
       run_callbacks :validation do
-        super(context) && nested_forms_valid?
+        parent_valid = super(context)
+        nested_valid = nested_forms_valid?(context)
+        parent_valid && nested_valid
       end
     end
 
@@ -221,30 +223,32 @@ module Blanks
 
     private
 
-    def nested_forms_valid?
-      self.class.associations.all? do |name, association|
+    def nested_forms_valid?(context)
+      all_valid = true
+
+      self.class.associations.each do |name, association|
         nested_form = public_send(name)
-        next true if nested_form.nil?
+        next if nested_form.nil?
 
         case association[:type]
         when :has_one
-          if nested_form.valid?
-            true
-          else
-            copy_nested_errors(name, nested_form)
-            false
-          end
+          next if nested_form.valid?(context)
+
+          errors.add(name.to_sym, :invalid)
+          copy_nested_errors(name, nested_form)
+          all_valid = false
         when :has_many
-          if nested_form.valid?
-            true
-          else
-            nested_form.each_with_index do |form, index|
-              copy_nested_errors("#{name}[#{index}]", form) unless form.valid?
-            end
-            false
+          next if nested_form.valid?(context)
+
+          errors.add(name.to_sym, :invalid)
+          nested_form.each_with_index do |form, index|
+            copy_nested_errors("#{name}[#{index}]", form) unless form.valid?(context)
           end
+          all_valid = false
         end
       end
+
+      all_valid
     end
 
     def copy_nested_errors(association_name, nested_form)

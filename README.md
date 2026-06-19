@@ -168,13 +168,14 @@ form.from_model(post)
 
 ### Validation with nested forms
 
-Validations automatically cascade to nested forms:
+Validations automatically cascade to nested forms and use the same validation context:
 
 ```ruby
 form = PostForm.new(title: "hello")
 form.images.new(url: nil) # invalid image
 
 form.valid? # false
+form.valid?(:publish) # false
 form.errors.full_messages # includes nested form errors
 ```
 
