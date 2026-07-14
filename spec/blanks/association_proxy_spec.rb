@@ -173,6 +173,29 @@ RSpec.describe Blanks::AssociationProxy do
     end
   end
 
+  describe "#replace" do
+    it "replaces records and returns self" do
+      proxy = described_class.new("ItemForm")
+      original = proxy.new(url: "first")
+      replacement = ItemForm.new(url: "second")
+
+      result = proxy.replace([replacement])
+
+      expect(result).to eq(proxy)
+      expect(proxy.to_a).to eq([replacement])
+      expect(proxy.to_a).not_to include(original)
+    end
+
+    it "clears records when passed nil" do
+      proxy = described_class.new("ItemForm")
+      proxy.new(url: "first")
+
+      proxy.replace(nil)
+
+      expect(proxy).to be_empty
+    end
+  end
+
   describe "#to_a" do
     it "returns the underlying array" do
       proxy = described_class.new("ItemForm")
