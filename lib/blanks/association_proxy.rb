@@ -69,6 +69,12 @@ module Blanks
       @records_by_id.clear
     end
 
+    def replace(records)
+      clear
+      Array(records).each { |record| push(record) }
+      self
+    end
+
     def to_a
       @records
     end

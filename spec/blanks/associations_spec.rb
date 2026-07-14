@@ -181,5 +181,27 @@ RSpec.describe Blanks::Associations do
 
       expect(item).to be_a(CustomForm)
     end
+
+    it "replaces records in existing association proxy when assigned an array" do
+      nested_class = Class.new(Blanks::Base) do
+        attribute :url, :string
+      end
+      stub_const("ImageForm", nested_class)
+
+      form_class = Class.new(Blanks::Base) do
+        has_many :images
+      end
+
+      original = ImageForm.new(url: "https://example.com/old")
+      replacement = ImageForm.new(url: "https://example.com/new")
+      form = form_class.new
+      proxy = form.images
+      proxy << original
+
+      form.images = [replacement]
+
+      expect(form.images).to be(proxy)
+      expect(form.images.to_a).to eq([replacement])
+    end
   end
 end
