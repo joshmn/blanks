@@ -314,6 +314,7 @@ RSpec.describe Blanks::Base do
         has_one :photo
         attribute :title, :string
       end
+      stub_const("PhotoWrapperForm", form_class)
 
       form = form_class.new(title: "test")
       form.build_photo
@@ -332,11 +333,14 @@ RSpec.describe Blanks::Base do
         has_many :images
         attribute :title, :string
       end
+      stub_const("ImageGalleryForm", form_class)
 
       form = form_class.new(title: "test")
       form.images.new
 
       expect(form.valid?).to be(false)
+      expect(form.errors.details[:images]).to include(error: :invalid)
+      expect(form.errors.messages.keys).to include(:"images[0].url")
     end
 
     it "includes nested form errors in parent errors" do
@@ -350,12 +354,59 @@ RSpec.describe Blanks::Base do
         has_one :photo
         attribute :title, :string
       end
+      stub_const("PhotoWrapperForm", form_class)
 
       form = form_class.new(title: "test")
       form.build_photo
       form.valid?
 
-      expect(form.errors.messages.keys).to include(:"photo.url")
+      expect(form.errors.messages.keys).to include(:photo, :"photo.url")
+      expect(form.errors.details[:photo]).to include(error: :invalid)
+    end
+
+    it "includes nested form errors in parent even when parent has errors" do
+      nested_class = Class.new(described_class) do
+        attribute :url, :string
+        validates :url, presence: true
+      end
+      stub_const("PhotoForm", nested_class)
+
+      form_class = Class.new(described_class) do
+        has_one :photo
+        attribute :title, :string
+        validates :title, presence: true
+      end
+      stub_const("ImageForm", form_class)
+
+      form = form_class.new
+      form.build_photo
+      form.valid?
+
+      expect(form.errors.messages.keys).to contain_exactly(:title, :photo, :"photo.url")
+      expect(form.errors.details[:photo]).to include(error: :invalid)
+    end
+
+    it "passes the validation context to nested forms" do
+      nested_class = Class.new(described_class) do
+        attribute :url, :string
+        validates :url, presence: true
+        validates :url, format: { with: /\Ahttps:.+/, message: 'must be HTTPS' }, on: :final_setup
+      end
+      stub_const("PhotoForm", nested_class)
+
+      form_class = Class.new(described_class) do
+        has_one :photo
+        attribute :title, :string
+        validates :title, presence: true
+      end
+      stub_const("ImageForm", form_class)
+
+      form = form_class.new(title: "Summer in Sicily")
+      form.build_photo(url: "http://myspace.com/sicily-photos")
+      form.valid?(:final_setup)
+
+      expect(form.errors.messages.keys).to contain_exactly(:photo, :"photo.url")
+      expect(form.errors.details[:photo]).to include(error: :invalid)
     end
   end
 end

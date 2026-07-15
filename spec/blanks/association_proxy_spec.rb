@@ -184,31 +184,38 @@ RSpec.describe Blanks::AssociationProxy do
   end
 
   describe "#valid?" do
-    it "returns true when all items are valid" do
-      valid_form_class = Class.new(Blanks::Base) do
+    subject(:proxy) { described_class.new("ValidForm") }
+
+    let(:valid_form_class) do
+      Class.new(Blanks::Base) do
         attribute :url, :string
         validates :url, presence: true
+        validates :url, format: { with: /\Ahttps:.+/, message: 'must be HTTPS' }, on: :final_setup
       end
-      stub_const("ValidForm", valid_form_class)
-
-      proxy = described_class.new("ValidForm")
-      proxy.new(url: "https://example.com")
-
-      expect(proxy.valid?).to be(true)
     end
 
-    it "returns false when any item is invalid" do
-      valid_form_class = Class.new(Blanks::Base) do
-        attribute :url, :string
-        validates :url, presence: true
-      end
+    before do
       stub_const("ValidForm", valid_form_class)
 
-      proxy = described_class.new("ValidForm")
       proxy.new(url: "https://example.com")
-      proxy.new(url: nil)
+    end
 
-      expect(proxy.valid?).to be(false)
+    context 'when all items are valid' do
+      it { is_expected.to be_valid }
+    end
+
+    context 'when validation context is set' do
+      before { proxy.new(url: "http://example.com") }
+
+      it 'returns false' do
+        expect(proxy.valid?(:final_setup)).to be false
+      end
+    end
+
+    context 'when any item is invalid' do
+      before { proxy.new(url: nil) }
+
+      it { is_expected.not_to be_valid }
     end
   end
 end
