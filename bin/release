@@ -9,6 +9,7 @@ git commit -m "Bump version for $VERSION"
 git push
 git tag v$VERSION
 git push --tags
+chmod -R a+rX lib
 gem build blanks.gemspec
 gem push "blanks-$VERSION.gem" --host https://rubygems.org
 rm "blanks-$VERSION.gem"
